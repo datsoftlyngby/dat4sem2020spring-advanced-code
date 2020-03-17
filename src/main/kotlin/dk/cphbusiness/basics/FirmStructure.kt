@@ -19,28 +19,33 @@ class Employee(
   var department: Department = department
     get() = field
     set(value) {
-      field.employees.remove(this)
+      field.employeeList.remove(this)
       field = value
-      field.employees.add(this)
+      field.employeeList.add(this)
       }
   init {
-    this.department.employees.add(this)
+    this.department.employeeList.add(this)
     }
   }
 
 class Department(
-    val code: String, val name: String, val manager: Person
+    val code: String, val name: String
     ) {
-  val employees = mutableListOf<Employee>()
+  lateinit var manager: Employee
+  internal val employeeList = mutableListOf<Employee>()
+  val employees : List<Employee> get() = employeeList
+
   }
 
 //class Employee(*, val dateOfEmployment: LocalDate, val salary: Int)
 //    : Person(*)
 
 fun main() {
-    val kurt = Person("Kurt", "Hansen", LocalDate.of(1990, 2, 28))
-    val adm = Department("ADM", "Administration", kurt)
-    val it = Department("IT", "Information Tech", kurt)
+    val adm = Department("ADM", "Administration")
+    val kurt = Employee("Kurt", "Hansen", LocalDate.of(1990, 2, 28), LocalDate.of(2016, 12, 24), 50_000_00, adm)
+    adm.manager = kurt
+    val it = Department("IT", "Information Tech")
+    it.manager = kurt
     println("Hello ${kurt.firstName} from ${kurt.dateOfBirth}")
     println("ADM: ${adm.code} is ${adm.name} has ${adm.manager} as manager")
     println("IT: ${it.code} is ${it.name} has ${it.manager} as manager")
@@ -69,7 +74,7 @@ fun main() {
       println("  $employee")
       }
 
-    it.employees.clear()
+    // it.employees.clear()
 
     println("ADM: ${adm.code} ${adm.name}:")
     for (employee in adm.employees) {
